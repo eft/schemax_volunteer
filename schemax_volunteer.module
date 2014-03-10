@@ -5,3 +5,49 @@
  */
 
 include_once 'schemax_volunteer.features.inc';
+
+/**
+ * Adds fields to the table that displays volunteer hours
+ *
+ * The volunteer hours are added to the inline entity form.
+ *
+ * Implements hook_inline_entity_form_table_fields_alter().
+ */
+function schemax_base_sports_inline_entity_form_table_fields_alter(&$fields, $context) {
+
+  $entity_type = $context['parent_entity_type'];
+  $bundle = $context['parent_bundle'];
+
+  // Check if IEF is managing events on a node form.
+  if ($entity_type == 'user' && $bundle == 'user') {
+
+    // Check if the inline entity is of type event_participant
+    $inline_entity_is_volunteer_hours = FALSE;
+    foreach ($context['allowed_bundles'] as $bundle) {
+      if ($bundle == 'schemax_volunteer_hours') {
+        $inline_entity_is_volunteer_hours = TRUE;
+        break;
+      }
+    }
+
+    // If inline entity is an attendance node then remove the title from the display
+    if ($inline_entity_is_volunteer_hours == TRUE) {
+
+      // Hide published status.
+
+      unset($fields['status']);
+
+      // Show date (weight it above before title)
+      $fields['field_date_no_repeat'] = array(
+        'type' => 'field',
+        'label' => t('Date'),
+        'weight' => $fields['title']['weight'] - 10,
+      );
+      $fields['field_notes'] = array(
+        'type' => 'field',
+        'label' => t('Notes'),
+        'weight' => 110,
+      );
+    }
+  }
+}
