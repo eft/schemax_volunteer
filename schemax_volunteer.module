@@ -1,10 +1,37 @@
 <?php
+
 /**
  * @file
  * Code for the schemax_volunteer feature.
  */
-
 include_once 'schemax_volunteer.features.inc';
+
+/**
+ * Implements hook_menu().
+ */
+function schemax_volunteer_menu() {
+  $items = array();
+
+  $items['user/%user/volunteer-hours'] = array(
+    'title' => 'Volunteer Hours',
+    'page callback' => 'volunteer_hours_view_embed',
+    'page arguments' => array(1),
+    'access callback' => 'user_view_access',
+    'access arguments' => array(1),
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  return $items;
+}
+
+function volunteer_hours_view_embed($account) {
+
+  //return views_embed_view('schemax_volunteer_hours','default');
+  return views_embed_view('schemax_volunteer_hours','default',$account->uid);
+
+
+}
+
 
 /**
  * Adds fields to the table that displays volunteer hours
@@ -13,7 +40,7 @@ include_once 'schemax_volunteer.features.inc';
  *
  * Implements hook_inline_entity_form_table_fields_alter().
  */
-function schemax_base_sports_inline_entity_form_table_fields_alter(&$fields, $context) {
+function schemax_volunteer_inline_entity_form_table_fields_alter(&$fields, $context) {
 
   $entity_type = $context['parent_entity_type'];
   $bundle = $context['parent_bundle'];
@@ -30,14 +57,13 @@ function schemax_base_sports_inline_entity_form_table_fields_alter(&$fields, $co
       }
     }
 
-    // If inline entity is an attendance node then remove the title from the display
+    // Make changes to IEF if necessary.
     if ($inline_entity_is_volunteer_hours == TRUE) {
 
       // Hide published status.
-
       unset($fields['status']);
 
-      // Show date (weight it above before title)
+      // Show date (weight it above before title).
       $fields['field_date_no_repeat'] = array(
         'type' => 'field',
         'label' => t('Date'),
