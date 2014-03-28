@@ -2,6 +2,7 @@ name = Schemax Volunteer
 description = Components related to volunteering
 core = 7.x
 package = Schemax
+version = 7.x-1.x
 project = schemax_volunteer
 dependencies[] = date
 dependencies[] = entityreference
